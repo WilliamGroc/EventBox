@@ -55,7 +55,7 @@ final class TaskLocalDataSourceProvider
 }
 
 String _$taskLocalDataSourceHash() =>
-    r'248f0aa37334a1897c48cf614498bd5d67cbb44d';
+    r'79d2947f3b1c1d4142808a56d16233be01198455';
 
 @ProviderFor(taskRepository)
 final taskRepositoryProvider = TaskRepositoryProvider._();

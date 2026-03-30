@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
 import 'package:wedding_witness_app/features/wedding/data/models/task_model.dart';
 
 abstract class TaskLocalDataSource {
@@ -10,41 +6,25 @@ abstract class TaskLocalDataSource {
   Future<void> updateTask(TaskModel task);
 }
 
-class TaskLocalDataSourceImpl implements TaskLocalDataSource {
-  Future<List<TaskModel>> _getLocalFile() async {
-    final directory = await getApplicationCacheDirectory();
-    File file = File('${directory.path}/assets/tasks.json');
-    String jsonString;
+class TaskLocalDataSourceImpl implements TaskLocalDataSource  {
+  final Dio dio;
 
-    if (!await file.exists()) {
-      jsonString = await rootBundle.loadString('assets/tasks.json');
-    } else {
-      jsonString = await file.readAsString();
-    }
-
-    final List<dynamic> jsonList =  jsonDecode(jsonString);
-
-    return jsonList.map((json) => TaskModel.fromJson(json)).toList();
-  }
-
-  Future<void> _writeLocalFile(List<TaskModel> tasks) async {
-    final directory = await getApplicationCacheDirectory();
-    File file = File('${directory.path}/assets/tasks.json');
-
-    if (!await file.exists()) {
-      await file.create(recursive: true);
-    }
-
-    final String jsonString = jsonEncode(
-      tasks.map((t) => t.toJson()).toList(),
-    );
-    await file.writeAsString(jsonString);
-  }
+  TaskLocalDataSourceImpl({required this.dio});
 
   @override
   Future<List<TaskModel>> getTasks() async {
     try {
-      return _getLocalFile();
+      final response = await dio.get('tasks');
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => TaskModel.fromJson(json)).toList();
+      } else {
+        print(
+          'Erreur lors de la récupération des tâches : ${response.statusCode}',
+        );
+        return [];
+      }
     } catch (e) {
       print('Erreur lors de la lecture : $e');
       return []; // Retourne une liste vide en cas d'erreur
@@ -54,18 +34,11 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
   @override
   Future<void> updateTask(TaskModel task) async {
     try {
-      List<TaskModel> tasks = await _getLocalFile();
+      final response = await dio.put('tasks/${task.id}', data: task.toJson());
 
-      // 3. Mettre à jour la tâche dans la liste
-      int index = tasks.indexWhere((t) => t.id == task.id);
-      if (index != -1) {
-        tasks[index] = task; // Met à jour la tâche existante
-      } else {
-        tasks.add(task); // Ajoute une nouvelle tâche si elle n'existe pas
+      if (response.statusCode != 200) {
+        print('Erreur lors de la mise à jour : ${response.statusCode}');
       }
-
-      // 4. Écrire la liste mise à jour dans le fichier
-      await _writeLocalFile(tasks);
     } catch (e) {
       print('Erreur lors de la mise à jour : $e');
     }

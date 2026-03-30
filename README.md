@@ -1,18 +1,75 @@
-# wedding_witness_app
+# EventBox
 
-A new Flutter project.
+EventBox contains a Flutter client and a Go server.
 
-## Getting Started
+## Project Structure
 
-This project is a starting point for a Flutter application.
+- `lib/`: Flutter application code.
+- `server/`: Go API, Mage tasks, and Air live-reload configuration.
 
-A few resources to get you started if this is your first Flutter project:
+## Flutter Development
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Install dependencies from the repository root:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+```
 
+Run code generation in watch mode:
+
+```bash
+dart run build_runner watch -d
+```
+
+Start the Flutter app as usual:
+
+```bash
+flutter run
+```
+
+## Server Development
+
+The Go server lives in `server/` and uses Mage for common tasks.
+
+Install Go dependencies:
+
+```bash
+cd server
+mage InstallDeps
+```
+
+Run the server in development mode with live reload:
+
+```bash
+cd server
+mage Dev
+```
+
+## Windows Notes
+
+On Windows, `mage Dev` uses `server/.air.windows.toml` so Air builds `tmp/main.exe` and runs it with a Windows-compatible command.
+
+On macOS and Linux, `mage Dev` uses `server/.air.toml`.
+
+## Useful Mage Tasks
+
+Build the server binary:
+
+```bash
+cd server
+mage Build
+```
+
+Install the server binary:
+
+```bash
+cd server
+mage Install
+```
+
+Clean build artifacts created by Mage:
+
+```bash
+cd server
+mage Clean
+```

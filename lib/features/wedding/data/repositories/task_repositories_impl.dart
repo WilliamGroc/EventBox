@@ -10,8 +10,7 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<List<Task>> getTasks() async {
-    final taskModels = await localDataSource.getTasks();
-    return taskModels;
+    return localDataSource.getTasks();
   }
 
   @override

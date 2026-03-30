@@ -9,9 +9,10 @@ import (
 	"github.com/WilliamGroc/EventBox/app/infrastructure/models"
 	"github.com/WilliamGroc/EventBox/app/infrastructure/persistance"
 	"github.com/WilliamGroc/EventBox/app/presentation/api"
+	"github.com/glebarez/sqlite"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"gorm.io/driver/sqlite"
+	"github.com/go-chi/cors"
 	"gorm.io/gorm"
 )
 
@@ -47,6 +48,15 @@ func initDatabase() *gorm.DB {
 func initRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"}, // Autorise tous les origines (à adapter en production)
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Cache la réponse preflight pendant 5 minutes
+	}))
 
 	return r
 }

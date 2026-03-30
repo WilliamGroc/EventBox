@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:wedding_witness_app/features/wedding/data/datasources/http.config.dart';
 import 'package:wedding_witness_app/features/wedding/data/datasources/task_local_datasource.dart';
 import 'package:wedding_witness_app/features/wedding/data/repositories/task_repositories_impl.dart';
 import 'package:wedding_witness_app/features/wedding/domain/repositories/task_repository.dart';
@@ -10,7 +11,9 @@ part 'injection_container.g.dart';
 // Data Sources
 @riverpod
 TaskLocalDataSource taskLocalDataSource(Ref ref) {
-  return TaskLocalDataSourceImpl();
+  return TaskLocalDataSourceImpl(
+    dio: ref.watch(dioProvider),
+  );
 }
 
 // Repositories
