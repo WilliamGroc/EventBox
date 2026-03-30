@@ -19,10 +19,5 @@ func (uc *GetTasksUseCase) Execute() ([]entities.Task, error) {
 		return nil, err
 	}
 
-	var result []entities.Task
-	for _, task := range tasks {
-		result = append(result, task)
-	}
-
-	return result, nil
+	return tasks, nil
 }

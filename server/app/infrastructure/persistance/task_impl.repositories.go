@@ -22,7 +22,7 @@ func (r *TaskRepositoryGorm) GetAllTasks() ([]entities.Task, error) {
 		return nil, err
 	}
 
-	var result []entities.Task
+	var result []entities.Task = make([]entities.Task, 0, len(tasks))
 	for _, task := range tasks {
 		result = append(result, entities.Task{
 			ID:          task.ID,
