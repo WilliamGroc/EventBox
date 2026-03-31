@@ -71,11 +71,15 @@ func NewContainer() *Container {
 		Router: router,
 	}
 
+	// Repositories
 	taskRepository := persistance.NewTaskRepository(db)
 
+	// Use Cases
 	getTaskUserCase := usecases.NewGetTasksUseCase(taskRepository)
+	updateIsCompletedTaskUseCase := usecases.NewUpdateIsCompletedTaskUseCase(taskRepository)
 
-	api.NewTaskRoutes(router, getTaskUserCase)
+	// API Routes
+	api.NewTaskRoutes(router, getTaskUserCase, updateIsCompletedTaskUseCase)
 
 	return container
 }

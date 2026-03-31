@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:wedding_witness_app/features/wedding/data/models/task_model.dart';
 
@@ -17,7 +19,7 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource  {
       final response = await dio.get('tasks');
 
       if (response.statusCode == 200) {
-        List<dynamic> data = response.data;
+        List<dynamic> data = json.decode(response.data);
         return data.map((json) => TaskModel.fromJson(json)).toList();
       } else {
         print(

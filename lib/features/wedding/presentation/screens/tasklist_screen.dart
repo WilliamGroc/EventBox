@@ -18,8 +18,10 @@ class ChecklistScreen extends ConsumerWidget {
             itemCount: tasks.length,
             itemBuilder: (context, index) {
               final task = tasks[index];
+              final startTime = task.startTime ?? '';
+              final title = task.title ?? '';
               return CheckboxListTile(
-                title: Text(task.title),
+                title: Text("$startTime $title"),
                 value: task.isCompleted,
                 onChanged: (value) {
                   ref

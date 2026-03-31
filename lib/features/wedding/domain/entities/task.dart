@@ -1,11 +1,15 @@
 class Task {
-  final String id;
-  final String title;
+  final int id;
+  final String? title;
+  final String? description;
   final bool isCompleted;
+  final String? startTime ;
 
   Task({
     required this.id,
-    required this.title,
+    this.title,
+    this.description,
+    this.startTime,
     this.isCompleted = false,
   });
 }

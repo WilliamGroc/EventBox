@@ -1,6 +1,8 @@
 package persistance
 
 import (
+	"fmt"
+
 	"github.com/WilliamGroc/EventBox/app/domain/entities"
 	"github.com/WilliamGroc/EventBox/app/domain/repositories"
 	"github.com/WilliamGroc/EventBox/app/infrastructure/models"
@@ -22,19 +24,33 @@ func (r *TaskRepositoryGorm) GetAllTasks() ([]entities.Task, error) {
 		return nil, err
 	}
 
+	fmt.Println(tasks)
+
 	var result []entities.Task = make([]entities.Task, 0, len(tasks))
 	for _, task := range tasks {
 		result = append(result, entities.Task{
 			ID:          task.ID,
 			Title:       task.Title,
 			Description: task.Description,
-			Completed:   task.Completed,
+			IsCompleted: task.IsCompleted,
+			StartTime:   task.StartTime,
 		})
 	}
 	return result, nil
 }
 
 func (r *TaskRepositoryGorm) UpdateTask(task *entities.Task) error {
-	// Implémentation pour mettre à jour une tâche existante dans la base de données
+	var taskModel models.TaskModel
+	err := r.DB.First(&taskModel, task.ID).Error
+	if err != nil {
+		return err
+	}
+
+	taskModel.IsCompleted = task.IsCompleted
+
+	err = r.DB.Save(&taskModel).Error
+	if err != nil {
+		return err
+	}
 	return nil
 }

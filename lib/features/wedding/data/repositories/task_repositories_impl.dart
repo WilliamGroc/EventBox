@@ -16,7 +16,7 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<void> updateTask(Task task) async {
     await localDataSource.updateTask(
-      TaskModel(id: task.id, title: task.title, isCompleted: task.isCompleted),
+      TaskModel(id: task.id, isCompleted: task.isCompleted),
     );
   }
 }
