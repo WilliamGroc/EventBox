@@ -6,4 +6,5 @@ type Task struct {
 	Description string `json:"description"`
 	IsCompleted bool   `json:"isCompleted"`
 	StartTime   string `json:"startTime"`
+	SongID      uint   `json:"songId"`
 }

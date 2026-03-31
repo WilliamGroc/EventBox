@@ -1,8 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wedding_witness_app/features/wedding/data/datasources/http.config.dart';
+import 'package:wedding_witness_app/features/wedding/data/datasources/song_datasource.dart';
 import 'package:wedding_witness_app/features/wedding/data/datasources/task_local_datasource.dart';
+import 'package:wedding_witness_app/features/wedding/data/repositories/song_repositories_impl.dart';
 import 'package:wedding_witness_app/features/wedding/data/repositories/task_repositories_impl.dart';
+import 'package:wedding_witness_app/features/wedding/domain/entities/song.dart';
+import 'package:wedding_witness_app/features/wedding/domain/repositories/song_repository.dart';
 import 'package:wedding_witness_app/features/wedding/domain/repositories/task_repository.dart';
+import 'package:wedding_witness_app/features/wedding/domain/usecases/get_songs.dart';
 import 'package:wedding_witness_app/features/wedding/domain/usecases/get_tasks.dart';
 import 'package:wedding_witness_app/features/wedding/domain/usecases/update_task.dart';
 
@@ -16,11 +21,25 @@ TaskLocalDataSource taskLocalDataSource(Ref ref) {
   );
 }
 
+@riverpod
+SongDataSource songLocalDataSource(Ref ref) {
+  return SongDataSourceImpl(
+    dio: ref.watch(dioProvider),
+  );
+}
+
 // Repositories
 @riverpod
 TaskRepository taskRepository(Ref ref) {
   return TaskRepositoryImpl(
     localDataSource: ref.watch(taskLocalDataSourceProvider),
+  );
+}
+
+@riverpod
+SongRepository songRepository(Ref ref) {
+  return SongRepositoriesImpl(
+    localDataSource: ref.watch(songLocalDataSourceProvider),
   );
 }
 
@@ -33,4 +52,9 @@ GetTasks getTasks(Ref ref) {
 @riverpod
 UpdateTask updateTask(Ref ref) {
   return UpdateTask(ref.watch(taskRepositoryProvider));
+}
+
+@riverpod
+GetSongs getSong(Ref ref) {
+  return GetSongs(ref.watch(songRepositoryProvider));
 }

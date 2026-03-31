@@ -57,6 +57,48 @@ final class TaskLocalDataSourceProvider
 String _$taskLocalDataSourceHash() =>
     r'79d2947f3b1c1d4142808a56d16233be01198455';
 
+@ProviderFor(songLocalDataSource)
+final songLocalDataSourceProvider = SongLocalDataSourceProvider._();
+
+final class SongLocalDataSourceProvider
+    extends $FunctionalProvider<SongDataSource, SongDataSource, SongDataSource>
+    with $Provider<SongDataSource> {
+  SongLocalDataSourceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'songLocalDataSourceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$songLocalDataSourceHash();
+
+  @$internal
+  @override
+  $ProviderElement<SongDataSource> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SongDataSource create(Ref ref) {
+    return songLocalDataSource(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SongDataSource value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SongDataSource>(value),
+    );
+  }
+}
+
+String _$songLocalDataSourceHash() =>
+    r'a19160eea8562d2b82038cf667301d0839982703';
+
 @ProviderFor(taskRepository)
 final taskRepositoryProvider = TaskRepositoryProvider._();
 
@@ -97,6 +139,47 @@ final class TaskRepositoryProvider
 }
 
 String _$taskRepositoryHash() => r'd2c2fcf4aafea4bc006fc5fbf8c4dc2d0115bcbc';
+
+@ProviderFor(songRepository)
+final songRepositoryProvider = SongRepositoryProvider._();
+
+final class SongRepositoryProvider
+    extends $FunctionalProvider<SongRepository, SongRepository, SongRepository>
+    with $Provider<SongRepository> {
+  SongRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'songRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$songRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<SongRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SongRepository create(Ref ref) {
+    return songRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SongRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SongRepository>(value),
+    );
+  }
+}
+
+String _$songRepositoryHash() => r'57760c3b81f2ec3c2005db3a98f85e35017b4226';
 
 @ProviderFor(getTasks)
 final getTasksProvider = GetTasksProvider._();
@@ -179,3 +262,44 @@ final class UpdateTaskProvider
 }
 
 String _$updateTaskHash() => r'b3a70db759946aa0efd50ff85756c2db8f066f1d';
+
+@ProviderFor(getSong)
+final getSongProvider = GetSongProvider._();
+
+final class GetSongProvider
+    extends $FunctionalProvider<GetSongs, GetSongs, GetSongs>
+    with $Provider<GetSongs> {
+  GetSongProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'getSongProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$getSongHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetSongs> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GetSongs create(Ref ref) {
+    return getSong(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetSongs value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetSongs>(value),
+    );
+  }
+}
+
+String _$getSongHash() => r'c7e26544425edcda6ca1f6a9dbdaecfc9cfe8288';

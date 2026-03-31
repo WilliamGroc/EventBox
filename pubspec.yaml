@@ -39,6 +39,7 @@ dependencies:
   go_router: ^17.1.0
   path_provider: ^2.1.5
   dio: ^5.9.2
+  audioplayers: ^6.6.0
 
 dev_dependencies:
   flutter_test:

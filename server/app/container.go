@@ -37,7 +37,11 @@ func initDatabase() *gorm.DB {
 	fmt.Println("Connecté à la base de données SQLite avec GORM !")
 
 	// Migrer le schéma (créer les tables)
-	err = db.AutoMigrate(&models.TaskModel{})
+	err = db.AutoMigrate(
+		&models.TaskModel{},
+		&models.SongModel{},
+	)
+
 	if err != nil {
 		log.Fatal("Erreur de migration : ", err)
 	}
@@ -73,13 +77,18 @@ func NewContainer() *Container {
 
 	// Repositories
 	taskRepository := persistance.NewTaskRepository(db)
+	songRepository := persistance.NewSongRepository(db)
 
 	// Use Cases
 	getTaskUserCase := usecases.NewGetTasksUseCase(taskRepository)
 	updateIsCompletedTaskUseCase := usecases.NewUpdateIsCompletedTaskUseCase(taskRepository)
 
+	getSongUserCase := usecases.NewGetSongsUseCase(songRepository)
+	getSongByIDUserCase := usecases.NewGetSongByIDUseCase(songRepository)
+
 	// API Routes
 	api.NewTaskRoutes(router, getTaskUserCase, updateIsCompletedTaskUseCase)
+	api.NewSongRoutes(router, getSongUserCase, getSongByIDUserCase)
 
 	return container
 }

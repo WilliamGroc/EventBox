@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wedding_witness_app/features/wedding/presentation/screens/home_screen.dart';
+import 'package:wedding_witness_app/features/wedding/presentation/screens/songs_screen.dart';
 import 'package:wedding_witness_app/features/wedding/presentation/screens/tasklist_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,6 +26,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   icon: Icon(Icons.checklist),
                   label: 'Checklist',
                 ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.music_note),
+                  label: 'Chansons',
+                ),
               ],
             ),
           );
@@ -35,6 +40,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/checklist',
             builder: (context, state) => const ChecklistScreen(),
+          ),
+          GoRoute(
+            path: '/songs',
+            builder: (context, state) => const SongsScreen(),
           ),
         ],
       ),
@@ -56,6 +65,9 @@ void _onItemTapped(int index, BuildContext context) {
       break;
     case 1:
       context.go('/checklist');
+      break;
+    case 2:
+      context.go('/songs');
       break;
   }
 }

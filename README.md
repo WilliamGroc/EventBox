@@ -27,6 +27,14 @@ Start the Flutter app as usual:
 flutter run
 ```
 
+### Config emulator
+
+```bash
+sdkmanager "system-images;android-36;google_apis;x86_64"
+avdmanager create avd -n "Pixel" -k "system-images;android-36;google_apis;x86_64" -d "pixel_5"
+emulator -avd Pixel -c 1024M
+```
+
 ## Server Development
 
 The Go server lives in `server/` and uses Mage for common tasks.

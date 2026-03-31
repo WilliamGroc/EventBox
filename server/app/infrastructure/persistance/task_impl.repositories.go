@@ -1,8 +1,6 @@
 package persistance
 
 import (
-	"fmt"
-
 	"github.com/WilliamGroc/EventBox/app/domain/entities"
 	"github.com/WilliamGroc/EventBox/app/domain/repositories"
 	"github.com/WilliamGroc/EventBox/app/infrastructure/models"
@@ -23,8 +21,6 @@ func (r *TaskRepositoryGorm) GetAllTasks() ([]entities.Task, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(tasks)
 
 	var result []entities.Task = make([]entities.Task, 0, len(tasks))
 	for _, task := range tasks {
