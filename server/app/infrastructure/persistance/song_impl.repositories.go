@@ -25,8 +25,9 @@ func (r *SongRepositoryGorm) GetAllSongs() ([]entities.Song, error) {
 	var result []entities.Song = make([]entities.Song, 0, len(songs))
 	for _, task := range songs {
 		result = append(result, entities.Song{
-			ID:    task.ID,
-			Title: task.Title,
+			ID:       task.ID,
+			Title:    task.Title,
+			FileName: task.FileName,
 		})
 	}
 	return result, nil

@@ -52,7 +52,7 @@ class SongDataSourceImpl implements SongDataSource {
         final Directory directory = await getApplicationDocumentsDirectory();
         final String filePath = "${directory.path}/${song.fileName}";
 
-
+        print('Téléchargement de la chanson : ${song.title} (${song.fileName}) vers $filePath');
         final File file = File(filePath);
 
         final bool alreadyExist = await file.exists();

@@ -1,0 +1,7 @@
+<!-- android/app/src/main/res/xml/network_security_config.xml -->
+<network-security-config>
+  <domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="true">ton-domaine.com</domain>
+    <domain includeSubdomains="true">localhost</domain>    <!-- Pour le développement local -->
+  </domain-config>
+</network-security-config>
