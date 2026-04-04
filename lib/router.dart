@@ -76,12 +76,16 @@ void _onItemTapped(int index, BuildContext context) {
   switch (index) {
     case 0:
       context.go('/');
+      break;
     case 1:
       context.go('/checklist');
+      break;
     case 2:
       context.go('/songs');
+      break;
     case 3:
       context.go('/chat');
+      break;
   }
 }
 
