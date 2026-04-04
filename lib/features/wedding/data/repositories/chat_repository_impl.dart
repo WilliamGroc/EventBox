@@ -14,7 +14,12 @@ class ChatRepositoryImpl implements ChatRepository {
     try {
       final response = await dio.get('chat/messages');
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.data as String);
+        final dynamic rawData = response.data;
+        final List<dynamic> data = rawData is String
+            ? json.decode(rawData) as List<dynamic>
+            : rawData is List<dynamic>
+                ? rawData
+                : [];
         return data
             .map((e) => ChatMessageModel.fromJson(e as Map<String, dynamic>))
             .toList();

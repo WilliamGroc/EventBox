@@ -29,11 +29,23 @@ class TaskController extends _$TaskController {
       }
     }, onError: (e) {
       if (!completer.isCompleted) completer.completeError(e);
+    }, onDone: () {
+      if (!completer.isCompleted) completer.completeError(Exception('WebSocket closed before initial data; falling back to HTTP'));
     });
 
     ref.onDispose(() => _subscription?.cancel());
 
-    return completer.future;
+    try {
+      return await completer.future.timeout(
+        const Duration(seconds: 10),
+        onTimeout: () async {
+          _subscription?.cancel();
+          return ref.read(getTasksProvider).call();
+        },
+      );
+    } catch (_) {
+      return ref.read(getTasksProvider).call();
+    }
   }
 
   Future<void> toggleTaskCompletion(Task task) async {
