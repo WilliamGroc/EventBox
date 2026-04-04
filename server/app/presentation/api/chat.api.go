@@ -74,6 +74,8 @@ func BuildChatMessageHandler(sendMessageUseCase *usecases.SendMessageUseCase) fu
 			log.Println("Chat: erreur sérialisation:", err)
 			return
 		}
-		hub.Broadcast <- broadcast
+		// Envoi non-bloquant depuis readPump : évite de bloquer la réception
+		// de nouveaux messages si le canal Broadcast est saturé.
+		hub.PublishLatest(broadcast)
 	}
 }

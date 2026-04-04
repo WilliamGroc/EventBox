@@ -3,13 +3,53 @@ package ws
 import (
 	"log"
 	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool { return true },
+// NewUpgrader construit un websocket.Upgrader dont CheckOrigin valide l'en-tête
+// Origin contre la liste allowedOrigins fournie (valeurs brutes, ex.
+// ["http://localhost:3000", "https://wedding.example.com"]).
+//
+// Si allowedOrigins est vide, le comportement de sécurité par défaut de
+// gorilla/websocket est utilisé : il compare l'en-tête Origin au Host de la
+// requête, ce qui est suffisant en développement local.
+func NewUpgrader(allowedOrigins []string) websocket.Upgrader {
+	if len(allowedOrigins) == 0 {
+		// Comportement par défaut de gorilla : Origin == Host. Sûr en dev.
+		return websocket.Upgrader{}
+	}
+
+	// Construire un set normalisé pour la comparaison O(1).
+	allowed := make(map[string]struct{}, len(allowedOrigins))
+	for _, o := range allowedOrigins {
+		allowed[strings.ToLower(strings.TrimRight(o, "/"))] = struct{}{}
+	}
+
+	return websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			if origin == "" {
+				// Pas d'en-tête Origin (client non-navigateur) : refuser par
+				// défaut pour ne pas contourner la protection CSWSH.
+				return false
+			}
+			// Normaliser : scheme + host (sans chemin ni trailing-slash).
+			u, err := url.Parse(origin)
+			if err != nil {
+				return false
+			}
+			normalized := strings.ToLower(u.Scheme + "://" + u.Host)
+			_, ok := allowed[normalized]
+			if !ok {
+				log.Printf("WebSocket: origine refusée: %q", origin)
+			}
+			return ok
+		},
+	}
 }
 
 // Client représente une connexion WebSocket active.
@@ -22,6 +62,7 @@ type Client struct {
 
 // Hub gère l'ensemble des clients WebSocket connectés.
 type Hub struct {
+	upgrader   websocket.Upgrader
 	clients    map[*Client]bool
 	Broadcast  chan []byte
 	register   chan *Client
@@ -31,8 +72,9 @@ type Hub struct {
 }
 
 // NewHub crée un Hub sans handler de messages entrants.
-func NewHub() *Hub {
+func NewHub(allowedOrigins []string) *Hub {
 	return &Hub{
+		upgrader:   NewUpgrader(allowedOrigins),
 		clients:    make(map[*Client]bool),
 		Broadcast:  make(chan []byte, 256),
 		register:   make(chan *Client),
@@ -41,8 +83,8 @@ func NewHub() *Hub {
 }
 
 // NewHubWithHandler crée un Hub avec un handler pour les messages entrants.
-func NewHubWithHandler(onMessage func([]byte, *Hub)) *Hub {
-	h := NewHub()
+func NewHubWithHandler(allowedOrigins []string, onMessage func([]byte, *Hub)) *Hub {
+	h := NewHub(allowedOrigins)
 	h.onMessage = onMessage
 	return h
 }
@@ -87,9 +129,32 @@ func (h *Hub) Run() {
 	}
 }
 
+// PublishLatest envoie msg sur le canal Broadcast de façon non-bloquante.
+// Si le canal est plein, un message ancien est évincé pour laisser place
+// au plus récent (pattern "dernier état"). En cas d'échec persistant, le
+// message est droppé et loggué plutôt que de bloquer l'appelant.
+func (h *Hub) PublishLatest(msg []byte) {
+	select {
+	case h.Broadcast <- msg:
+		// envoyé directement
+	default:
+		// canal plein : tenter d'évincer un ancien message
+		select {
+		case <-h.Broadcast:
+		default:
+		}
+		// second essai non-bloquant
+		select {
+		case h.Broadcast <- msg:
+		default:
+			log.Println("Hub: broadcast droppé (canal saturé)")
+		}
+	}
+}
+
 // ServeWS gère l'upgrade HTTP → WebSocket et enregistre le client.
 func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("WebSocket upgrade error:", err)
 		return
@@ -148,7 +213,7 @@ func (c *Client) readPump(h *Hub) {
 // ServeWSWithInitial upgraade la connexion WebSocket, envoie un message initial
 // au nouveau client avant de démarrer la boucle de lecture/écriture.
 func (h *Hub) ServeWSWithInitial(w http.ResponseWriter, r *http.Request, initialMsg []byte) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("WebSocket upgrade error:", err)
 		return

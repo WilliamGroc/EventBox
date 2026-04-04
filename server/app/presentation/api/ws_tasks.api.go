@@ -24,13 +24,15 @@ func NewTaskWsRoutes(router *chi.Mux, taskHub *ws.Hub, getTasksUseCase *usecases
 }
 
 // BroadcastTasks sérialise et diffuse la liste complète des tasks à tous les clients WS.
+// L'envoi est non-bloquant via PublishLatest : si le channel est saturé, le plus ancien
+// message est évincé au profit du snapshot le plus récent.
 func BroadcastTasks(taskHub *ws.Hub, getTasksUseCase *usecases.GetTasksUseCase) {
 	data, err := buildTasksPayload(getTasksUseCase)
 	if err != nil {
 		log.Println("WS Tasks: erreur broadcast:", err)
 		return
 	}
-	taskHub.Broadcast <- data
+	taskHub.PublishLatest(data)
 }
 
 func buildTasksPayload(getTasksUseCase *usecases.GetTasksUseCase) ([]byte, error) {

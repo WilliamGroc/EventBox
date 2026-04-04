@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/WilliamGroc/EventBox/app/domain/usecases"
 	"github.com/WilliamGroc/EventBox/app/infrastructure/models"
@@ -93,8 +94,12 @@ func NewContainer() *Container {
 	sendMessageUseCase := usecases.NewSendMessageUseCase(messageRepository)
 
 	// WebSocket Hubs
-	taskHub := ws.NewHub()
-	chatHub := ws.NewHubWithHandler(api.BuildChatMessageHandler(sendMessageUseCase))
+	// ALLOWED_ORIGINS : liste d'origines séparées par des virgules, ex.
+	// "http://localhost:3000,https://wedding.example.com".
+	// Si vide, gorilla applique sa vérification par défaut (Origin == Host).
+	allowedOrigins := parseAllowedOrigins(os.Getenv("ALLOWED_ORIGINS"))
+	taskHub := ws.NewHub(allowedOrigins)
+	chatHub := ws.NewHubWithHandler(allowedOrigins, api.BuildChatMessageHandler(sendMessageUseCase))
 	go taskHub.Run()
 	go chatHub.Run()
 
@@ -105,4 +110,20 @@ func NewContainer() *Container {
 	api.NewChatRoutes(router, getMessagesUseCase, sendMessageUseCase, chatHub)
 
 	return container
+}
+
+// parseAllowedOrigins découpe une chaîne "origin1,origin2" en slice,
+// en ignorant les entrées vides.
+func parseAllowedOrigins(raw string) []string {
+	if raw == "" {
+		return nil
+	}
+	parts := strings.Split(raw, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		if trimmed := strings.TrimSpace(p); trimmed != "" {
+			out = append(out, trimmed)
+		}
+	}
+	return out
 }
