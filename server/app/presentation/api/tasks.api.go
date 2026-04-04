@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/WilliamGroc/EventBox/app/domain/usecases"
+	"github.com/WilliamGroc/EventBox/app/ws"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -14,6 +15,7 @@ type TaskAPI struct {
 
 	getTasksUseCase              *usecases.GetTasksUseCase
 	updateIsCompletedTaskUseCase *usecases.UpdateIsCompletedTaskUseCase
+	taskHub                      *ws.Hub
 }
 
 type TaskAPIInterface interface {
@@ -23,11 +25,13 @@ type TaskAPIInterface interface {
 
 func NewTaskRoutes(router *chi.Mux,
 	getTasksUseCase *usecases.GetTasksUseCase,
-	updateIsCompletedTaskUseCase *usecases.UpdateIsCompletedTaskUseCase) *TaskAPI {
+	updateIsCompletedTaskUseCase *usecases.UpdateIsCompletedTaskUseCase,
+	taskHub *ws.Hub) *TaskAPI {
 	api := &TaskAPI{
 		Router:                       router,
 		getTasksUseCase:              getTasksUseCase,
 		updateIsCompletedTaskUseCase: updateIsCompletedTaskUseCase,
+		taskHub:                      taskHub,
 	}
 
 	router.Route("/tasks", func(r chi.Router) {
@@ -69,5 +73,9 @@ func (api *TaskAPI) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erreur lors de la mise à jour de la tâche", http.StatusInternalServerError)
 		return
 	}
+
+	// Broadcaster la liste mise à jour à tous les clients WebSocket
+	go BroadcastTasks(api.taskHub, api.getTasksUseCase)
+
 	w.WriteHeader(http.StatusNoContent)
 }

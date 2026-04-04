@@ -28,6 +28,7 @@ func (r *SongRepositoryGorm) GetAllSongs() ([]entities.Song, error) {
 			ID:       task.ID,
 			Title:    task.Title,
 			FileName: task.FileName,
+			Moment:   task.Moment,
 		})
 	}
 	return result, nil
@@ -43,5 +44,6 @@ func (r *SongRepositoryGorm) GetSongByID(id uint) (*entities.Song, error) {
 		ID:       songModel.ID,
 		Title:    songModel.Title,
 		FileName: songModel.FileName,
+		Moment:   songModel.Moment,
 	}, nil
 }

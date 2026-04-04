@@ -3,7 +3,8 @@ class Task {
   final String? title;
   final String? description;
   final bool isCompleted;
-  final String? startTime ;
+  final String? startTime;
+  final int? songId;
 
   Task({
     required this.id,
@@ -11,5 +12,6 @@ class Task {
     this.description,
     this.startTime,
     this.isCompleted = false,
+    this.songId,
   });
 }

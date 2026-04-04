@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wedding_witness_app/features/wedding/presentation/screens/chat_screen.dart';
 import 'package:wedding_witness_app/features/wedding/presentation/screens/home_screen.dart';
 import 'package:wedding_witness_app/features/wedding/presentation/screens/songs_screen.dart';
 import 'package:wedding_witness_app/features/wedding/presentation/screens/tasklist_screen.dart';
@@ -10,13 +11,13 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       ShellRoute(
         builder: (context, state, child) {
-          // Ce builder définit le layout commun à toutes les sous-routes.
           return Scaffold(
-            appBar: AppBar(title: const Text('Wedding Witness App')),
-            body: child, // Ici, le contenu de chaque sous-route sera affiché.
+            appBar: AppBar(title: const Text('Wedding Witness')),
+            body: child,
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _calculateSelectedIndex(state),
               onTap: (index) => _onItemTapped(index, context),
+              type: BottomNavigationBarType.fixed,
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
@@ -28,14 +29,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.music_note),
-                  label: 'Chansons',
+                  label: 'Musiques',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_bubble_outline),
+                  label: 'Chat',
                 ),
               ],
             ),
           );
         },
         routes: [
-          // Sous-routes qui utiliseront le layout défini ci-dessus.
           GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
           GoRoute(
             path: '/checklist',
@@ -45,29 +49,39 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/songs',
             builder: (context, state) => const SongsScreen(),
           ),
+          GoRoute(
+            path: '/chat',
+            builder: (context, state) => const ChatScreen(),
+          ),
         ],
       ),
     ],
   );
 });
 
-// Fonction pour déterminer l'index sélectionné dans la BottomNavigationBar.
 int _calculateSelectedIndex(GoRouterState state) {
-  if (state.fullPath == '/checklist') return 1;
-  return 0; // Par défaut, l'index 0 correspond à la route '/'.
+  switch (state.fullPath) {
+    case '/checklist':
+      return 1;
+    case '/songs':
+      return 2;
+    case '/chat':
+      return 3;
+    default:
+      return 0;
+  }
 }
 
-// Fonction pour gérer les clics sur la BottomNavigationBar.
 void _onItemTapped(int index, BuildContext context) {
   switch (index) {
     case 0:
       context.go('/');
-      break;
     case 1:
       context.go('/checklist');
-      break;
     case 2:
       context.go('/songs');
-      break;
+    case 3:
+      context.go('/chat');
   }
 }
+

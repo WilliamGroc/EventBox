@@ -9,6 +9,7 @@ import (
 	"github.com/WilliamGroc/EventBox/app/infrastructure/models"
 	"github.com/WilliamGroc/EventBox/app/infrastructure/persistance"
 	"github.com/WilliamGroc/EventBox/app/presentation/api"
+	"github.com/WilliamGroc/EventBox/app/ws"
 	"github.com/glebarez/sqlite"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -40,6 +41,7 @@ func initDatabase() *gorm.DB {
 	err = db.AutoMigrate(
 		&models.TaskModel{},
 		&models.SongModel{},
+		&models.MessageModel{},
 	)
 
 	if err != nil {
@@ -78,6 +80,7 @@ func NewContainer() *Container {
 	// Repositories
 	taskRepository := persistance.NewTaskRepository(db)
 	songRepository := persistance.NewSongRepository(db)
+	messageRepository := persistance.NewMessageRepository(db)
 
 	// Use Cases
 	getTaskUserCase := usecases.NewGetTasksUseCase(taskRepository)
@@ -86,9 +89,20 @@ func NewContainer() *Container {
 	getSongUserCase := usecases.NewGetSongsUseCase(songRepository)
 	getSongByIDUserCase := usecases.NewGetSongByIDUseCase(songRepository)
 
+	getMessagesUseCase := usecases.NewGetMessagesUseCase(messageRepository)
+	sendMessageUseCase := usecases.NewSendMessageUseCase(messageRepository)
+
+	// WebSocket Hubs
+	taskHub := ws.NewHub()
+	chatHub := ws.NewHubWithHandler(api.BuildChatMessageHandler(sendMessageUseCase))
+	go taskHub.Run()
+	go chatHub.Run()
+
 	// API Routes
-	api.NewTaskRoutes(router, getTaskUserCase, updateIsCompletedTaskUseCase)
+	api.NewTaskRoutes(router, getTaskUserCase, updateIsCompletedTaskUseCase, taskHub)
+	api.NewTaskWsRoutes(router, taskHub, getTaskUserCase)
 	api.NewSongRoutes(router, getSongUserCase, getSongByIDUserCase)
+	api.NewChatRoutes(router, getMessagesUseCase, sendMessageUseCase, chatHub)
 
 	return container
 }

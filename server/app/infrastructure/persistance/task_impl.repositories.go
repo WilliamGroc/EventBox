@@ -30,6 +30,7 @@ func (r *TaskRepositoryGorm) GetAllTasks() ([]entities.Task, error) {
 			Description: task.Description,
 			IsCompleted: task.IsCompleted,
 			StartTime:   task.StartTime,
+			SongID:      task.SongID,
 		})
 	}
 	return result, nil
