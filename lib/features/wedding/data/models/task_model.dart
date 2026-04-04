@@ -7,6 +7,7 @@ class TaskModel extends Task {
     super.description,
     super.startTime,
     super.isCompleted,
+    super.songId,
   });
 
   // Méthode pour convertir un JSON en TaskModel
@@ -17,6 +18,7 @@ class TaskModel extends Task {
       description: json['description'],
       startTime: json['startTime'],
       isCompleted: json['isCompleted'] ?? false,
+      songId: (json['songId'] as int?) == 0 ? null : json['songId'] as int?,
     );
   }
 
@@ -28,6 +30,7 @@ class TaskModel extends Task {
       'isCompleted': isCompleted,
       'description': description,
       'startTime': startTime,
+      'songId': songId,
     };
   }
 }

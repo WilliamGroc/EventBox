@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/WilliamGroc/EventBox/app/domain/usecases"
 	"github.com/WilliamGroc/EventBox/app/infrastructure/models"
 	"github.com/WilliamGroc/EventBox/app/infrastructure/persistance"
 	"github.com/WilliamGroc/EventBox/app/presentation/api"
+	"github.com/WilliamGroc/EventBox/app/ws"
 	"github.com/glebarez/sqlite"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -40,6 +42,7 @@ func initDatabase() *gorm.DB {
 	err = db.AutoMigrate(
 		&models.TaskModel{},
 		&models.SongModel{},
+		&models.MessageModel{},
 	)
 
 	if err != nil {
@@ -78,6 +81,7 @@ func NewContainer() *Container {
 	// Repositories
 	taskRepository := persistance.NewTaskRepository(db)
 	songRepository := persistance.NewSongRepository(db)
+	messageRepository := persistance.NewMessageRepository(db)
 
 	// Use Cases
 	getTaskUserCase := usecases.NewGetTasksUseCase(taskRepository)
@@ -86,9 +90,40 @@ func NewContainer() *Container {
 	getSongUserCase := usecases.NewGetSongsUseCase(songRepository)
 	getSongByIDUserCase := usecases.NewGetSongByIDUseCase(songRepository)
 
+	getMessagesUseCase := usecases.NewGetMessagesUseCase(messageRepository)
+	sendMessageUseCase := usecases.NewSendMessageUseCase(messageRepository)
+
+	// WebSocket Hubs
+	// ALLOWED_ORIGINS : liste d'origines séparées par des virgules, ex.
+	// "http://localhost:3000,https://wedding.example.com".
+	// Si vide, gorilla applique sa vérification par défaut (Origin == Host).
+	allowedOrigins := parseAllowedOrigins(os.Getenv("ALLOWED_ORIGINS"))
+	taskHub := ws.NewHub(allowedOrigins)
+	chatHub := ws.NewHubWithHandler(allowedOrigins, api.BuildChatMessageHandler(sendMessageUseCase))
+	go taskHub.Run()
+	go chatHub.Run()
+
 	// API Routes
-	api.NewTaskRoutes(router, getTaskUserCase, updateIsCompletedTaskUseCase)
+	api.NewTaskRoutes(router, getTaskUserCase, updateIsCompletedTaskUseCase, taskHub)
+	api.NewTaskWsRoutes(router, taskHub, getTaskUserCase)
 	api.NewSongRoutes(router, getSongUserCase, getSongByIDUserCase)
+	api.NewChatRoutes(router, getMessagesUseCase, sendMessageUseCase, chatHub)
 
 	return container
+}
+
+// parseAllowedOrigins découpe une chaîne "origin1,origin2" en slice,
+// en ignorant les entrées vides.
+func parseAllowedOrigins(raw string) []string {
+	if raw == "" {
+		return nil
+	}
+	parts := strings.Split(raw, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		if trimmed := strings.TrimSpace(p); trimmed != "" {
+			out = append(out, trimmed)
+		}
+	}
+	return out
 }

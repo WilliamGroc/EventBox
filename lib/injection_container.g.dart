@@ -9,6 +9,141 @@ part of 'injection_container.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(notificationService)
+final notificationServiceProvider = NotificationServiceProvider._();
+
+final class NotificationServiceProvider
+    extends
+        $FunctionalProvider<
+          NotificationService,
+          NotificationService,
+          NotificationService
+        >
+    with $Provider<NotificationService> {
+  NotificationServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'notificationServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$notificationServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<NotificationService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  NotificationService create(Ref ref) {
+    return notificationService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(NotificationService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<NotificationService>(value),
+    );
+  }
+}
+
+String _$notificationServiceHash() =>
+    r'585c1e42ea844e71a2b76b80b165adfe2c5c8529';
+
+@ProviderFor(taskWsDatasource)
+final taskWsDatasourceProvider = TaskWsDatasourceProvider._();
+
+final class TaskWsDatasourceProvider
+    extends
+        $FunctionalProvider<
+          TaskWsDatasource,
+          TaskWsDatasource,
+          TaskWsDatasource
+        >
+    with $Provider<TaskWsDatasource> {
+  TaskWsDatasourceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'taskWsDatasourceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$taskWsDatasourceHash();
+
+  @$internal
+  @override
+  $ProviderElement<TaskWsDatasource> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TaskWsDatasource create(Ref ref) {
+    return taskWsDatasource(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TaskWsDatasource value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TaskWsDatasource>(value),
+    );
+  }
+}
+
+String _$taskWsDatasourceHash() => r'35985ce615f3dba4cba06bf68a0571d1a2a5e130';
+
+@ProviderFor(chatDatasource)
+final chatDatasourceProvider = ChatDatasourceProvider._();
+
+final class ChatDatasourceProvider
+    extends $FunctionalProvider<ChatDatasource, ChatDatasource, ChatDatasource>
+    with $Provider<ChatDatasource> {
+  ChatDatasourceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'chatDatasourceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$chatDatasourceHash();
+
+  @$internal
+  @override
+  $ProviderElement<ChatDatasource> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  ChatDatasource create(Ref ref) {
+    return chatDatasource(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ChatDatasource value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ChatDatasource>(value),
+    );
+  }
+}
+
+String _$chatDatasourceHash() => r'daa3d9cf55fb73eb9578eb31d0f77217e917b6b1';
+
 @ProviderFor(taskLocalDataSource)
 final taskLocalDataSourceProvider = TaskLocalDataSourceProvider._();
 
@@ -181,6 +316,47 @@ final class SongRepositoryProvider
 
 String _$songRepositoryHash() => r'57760c3b81f2ec3c2005db3a98f85e35017b4226';
 
+@ProviderFor(chatRepository)
+final chatRepositoryProvider = ChatRepositoryProvider._();
+
+final class ChatRepositoryProvider
+    extends $FunctionalProvider<ChatRepository, ChatRepository, ChatRepository>
+    with $Provider<ChatRepository> {
+  ChatRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'chatRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$chatRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<ChatRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  ChatRepository create(Ref ref) {
+    return chatRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ChatRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ChatRepository>(value),
+    );
+  }
+}
+
+String _$chatRepositoryHash() => r'090898082ec9b6159c307ada86f32005bf71ccbd';
+
 @ProviderFor(getTasks)
 final getTasksProvider = GetTasksProvider._();
 
@@ -303,3 +479,45 @@ final class GetSongProvider
 }
 
 String _$getSongHash() => r'c7e26544425edcda6ca1f6a9dbdaecfc9cfe8288';
+
+@ProviderFor(getChatMessages)
+final getChatMessagesProvider = GetChatMessagesProvider._();
+
+final class GetChatMessagesProvider
+    extends
+        $FunctionalProvider<GetChatMessages, GetChatMessages, GetChatMessages>
+    with $Provider<GetChatMessages> {
+  GetChatMessagesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'getChatMessagesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$getChatMessagesHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetChatMessages> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GetChatMessages create(Ref ref) {
+    return getChatMessages(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetChatMessages value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetChatMessages>(value),
+    );
+  }
+}
+
+String _$getChatMessagesHash() => r'cb23188153c1b09eec04143ebef774ec61318a9e';
